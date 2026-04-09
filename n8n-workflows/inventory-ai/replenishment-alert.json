@@ -1,0 +1,405 @@
+{
+  "name": "智能补货预警 - Smart Replenishment Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "inventory-alert",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook触发(库存变更)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "webhookId": "inventory-alert-webhook"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, sku, product_name, quantity, safety_stock, reorder_point, lead_time_days FROM foreign_trade_inventory WHERE id = '{{ $json.body.itemId }}'",
+        "options": {}
+      },
+      "id": "get-inventory-item",
+      "name": "查询库存项信息",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [500, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-reorder-point",
+              "leftValue": "={{ $json.quantity }}",
+              "rightValue": "={{ $json.reorder_point || $json.safety_stock }}",
+              "operator": {
+                "type": "number",
+                "operation": "lte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-stock-level",
+      "name": "检查是否低于再订货点",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=http://prediction-api:8000/predict/{{ $json.id }}/history",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "days",
+              "value": "30"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "get-forecast-demand",
+      "name": "获取未来30天预测需求",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1000, 200],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "prediction-api-auth",
+          "name": "Prediction API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 计算建议补货数量\nconst item = $input.item.json;\nconst forecast = $node[\"获取未来30天预测需求\"].json;\n\n// 目标库存 = 再订货点 + 预测需求\nconst targetStock = (item.reorder_point || item.safety_stock) + (forecast.summary?.totalPredicted || 0);\n\n// 建议补货数量 = 目标库存 - 当前库存 + 安全边际\nconst suggestedQuantity = Math.ceil(targetStock - item.quantity + (item.safety_stock * 0.2));\n\n// 确定优先级\nlet priority = 'medium';\nif (item.quantity <= 0) {\n  priority = 'urgent';\n} else if (item.quantity <= item.safety_stock * 0.5) {\n  priority = 'high';\n} else if (item.quantity <= item.safety_stock) {\n  priority = 'medium';\n} else {\n  priority = 'low';\n}\n\n// 生成推荐理由\nconst reason = `基于AI预测分析:\\n- 未来30天预计需求: ${forecast.summary?.totalPredicted || 0}件\\n- 当前库存: ${item.quantity}件\\n- 采购提前期: ${item.lead_time_days || 7}天\\n- 安全库存阈值: ${item.safety_stock || 0}件`;\n\nreturn {\n  itemId: item.id,\n  suggestedQuantity: Math.max(suggestedQuantity, 0),\n  priority,\n  reason,\n  forecastData: forecast\n};"
+      },
+      "id": "calculate-replenishment",
+      "name": "计算补货建议",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "replenishment_suggestions",
+        "columns": "item_id,suggested_quantity,reason,priority,status,forecast_data,created_at,updated_at",
+        "rows": "=[{\n  item_id: \"{{ $json.itemId }}\",\n  suggested_quantity: {{ $json.suggestedQuantity }},\n  reason: \"{{ $json.reason }}\",\n  priority: \"{{ $json.priority }}\",\n  status: \"pending\",\n  forecast_data: {{ JSON.stringify($json.forecastData) }},\n  created_at: new Date().toISOString(),\n  updated_at: new Date().toISOString()\n}]"
+      },
+      "id": "save-suggestion",
+      "name": "保存补货建议到数据库",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1500, 200],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-urgent",
+              "leftValue": "={{ $json.priority }}",
+              "rightValue": "urgent",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-urgency",
+      "name": "检查是否紧急",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1750, 200]
+    },
+    {
+      "parameters": {
+        "subject": "=🚨 紧急补货预警: {{ $node[\"查询库存项信息\"].json.product_name }}",
+        "html": "=<h2 style=\"color: red;\">紧急补货通知</h2><p><strong>商品:</strong> {{ $node[\"查询库存项信息\"].json.product_name }}</p><p><strong>SKU:</strong> {{ $node[\"查询库存项信息\"].json.sku }}</p><p><strong>当前库存:</strong> {{ $node[\"查询库存项信息\"].json.quantity }} 件</p><p><strong>建议补货:</strong> {{ $json.suggestedQuantity }} 件</p><p><strong>优先级:</strong> <span style=\"color: red; font-weight: bold;\">URGENT</span></p><hr><p>{{ $json.reason }}</p><p><a href=\"http://yourdomain.com/admin/inventory/replenishment\">立即处理</a></p>",
+        "to": "procurement@yourcompany.com",
+        "options": {}
+      },
+      "id": "send-urgent-email",
+      "name": "发送紧急邮件通知",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [2000, 100],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-credentials",
+          "name": "SMTP Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "subject": "=📦 补货建议: {{ $node[\"查询库存项信息\"].json.product_name }}",
+        "html": "=<h2>补货建议通知</h2><p><strong>商品:</strong> {{ $node[\"查询库存项信息\"].json.product_name }}</p><p><strong>SKU:</strong> {{ $node[\"查询库存项信息\"].json.sku }}</p><p><strong>当前库存:</strong> {{ $node[\"查询库存项信息\"].json.quantity }} 件</p><p><strong>建议补货:</strong> {{ $json.suggestedQuantity }} 件</p><p><strong>优先级:</strong> {{ $json.priority }}</p><hr><p>{{ $json.reason }}</p><p><a href=\"http://yourdomain.com/admin/inventory/replenishment\">查看详情</a></p>",
+        "to": "procurement@yourcompany.com",
+        "options": {}
+      },
+      "id": "send-normal-email",
+      "name": "发送普通邮件通知",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [2000, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-credentials",
+          "name": "SMTP Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://oapi.dingtalk.com/robot/send?access_token=YOUR_DINGTALK_TOKEN",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "msgtype",
+              "value": "markdown"
+            },
+            {
+              "name": "markdown",
+              "value": "={\n  \"title\": \"补货预警\",\n  \"text\": \"### 补货预警\\n\\n**商品**: {{ $node[\"查询库存项信息\"].json.product_name }}\\n\\n**SKU**: {{ $node[\"查询库存项信息\"].json.sku }}\\n\\n**当前库存**: {{ $node[\"查询库存项信息\"].json.quantity }} 件\\n\\n**建议补货**: {{ $json.suggestedQuantity }} 件\\n\\n**优先级**: {{ $json.priority }}\"\n}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-dingtalk",
+      "name": "发送钉钉通知",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2000, 500]
+    },
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "minutes"
+      },
+      "id": "wait-for-sms",
+      "name": "等待2分钟",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [2250, 100],
+      "webhookId": "sms-wait-webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.sms-provider.com/send",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "+8613800138000"
+            },
+            {
+              "name": "message",
+              "value": "=【紧急】{{ $node[\"查询库存项信息\"].json.product_name }}库存告急!当前{{ $node[\"查询库存项信息\"].json.quantity }}件,建议补货{{ $json.suggestedQuantity }}件。请立即处理!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "send-sms",
+      "name": "发送短信通知",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2500, 100]
+    }
+  ],
+  "connections": {
+    "Webhook触发(库存变更)": {
+      "main": [
+        [
+          {
+            "node": "查询库存项信息",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "查询库存项信息": {
+      "main": [
+        [
+          {
+            "node": "检查是否低于再订货点",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "检查是否低于再订货点": {
+      "main": [
+        [
+          {
+            "node": "获取未来30天预测需求",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取未来30天预测需求": {
+      "main": [
+        [
+          {
+            "node": "计算补货建议",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "计算补货建议": {
+      "main": [
+        [
+          {
+            "node": "保存补货建议到数据库",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "保存补货建议到数据库": {
+      "main": [
+        [
+          {
+            "node": "检查是否紧急",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "检查是否紧急": {
+      "main": [
+        [
+          {
+            "node": "发送紧急邮件通知",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "发送普通邮件通知",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发送紧急邮件通知": {
+      "main": [
+        [
+          {
+            "node": "等待2分钟",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发送普通邮件通知": {
+      "main": [
+        [
+          {
+            "node": "发送钉钉通知",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "等待2分钟": {
+      "main": [
+        [
+          {
+            "node": "发送短信通知",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2026-04-08T00:00:00.000Z",
+      "updatedAt": "2026-04-08T00:00:00.000Z",
+      "id": "1",
+      "name": "inventory-ai"
+    },
+    {
+      "createdAt": "2026-04-08T00:00:00.000Z",
+      "updatedAt": "2026-04-08T00:00:00.000Z",
+      "id": "3",
+      "name": "webhook"
+    },
+    {
+      "createdAt": "2026-04-08T00:00:00.000Z",
+      "updatedAt": "2026-04-08T00:00:00.000Z",
+      "id": "4",
+      "name": "alert"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-08T00:00:00.000Z",
+  "versionId": "1.0"
+}

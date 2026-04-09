@@ -1,0 +1,357 @@
+{
+  "name": "每日销量预测 - Daily Sales Forecast",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24,
+              "triggerAtHour": 2
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "定时触发(每天凌晨2点)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, sku, product_name, quantity, safety_stock, reorder_point FROM foreign_trade_inventory WHERE is_active = true AND forecast_enabled = true LIMIT 100",
+        "options": {}
+      },
+      "id": "get-inventory-items",
+      "name": "获取活跃商品列表",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [500, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "options": {}
+      },
+      "id": "split-items",
+      "name": "拆分商品列表",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT DATE(created_at) as date, SUM(quantity) as quantity FROM foreign_trade_inventory_transactions WHERE item_id = '{{ $json.id }}' AND created_at >= NOW() - INTERVAL '90 days' GROUP BY DATE(created_at) ORDER BY date",
+        "options": {}
+      },
+      "id": "get-sales-history",
+      "name": "获取90天销售历史",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1000, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://prediction-api:8000/predict",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "item_id",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "name": "historical_data",
+              "value": "={{ $node[\"获取90天销售历史\"].json }}"
+            },
+            {
+              "name": "forecast_days",
+              "value": "30"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "call-prediction-api",
+      "name": "调用预测API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1250, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "prediction-api-auth",
+          "name": "Prediction API Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "table": "sales_forecasts",
+        "columns": "item_id,forecast_date,predicted_quantity,lower_bound,upper_bound,confidence_level,model_version,created_at",
+        "rows": "={{ $json.predictions.map(p => ({\n  item_id: \"{{ $node[\"获取活跃商品列表\"].json.id }}\",\n  forecast_date: p.date,\n  predicted_quantity: p.predicted_quantity,\n  lower_bound: p.lower_bound,\n  upper_bound: p.upper_bound,\n  confidence_level: 0.95,\n  model_version: p.model_version || 'prophet-1.1.5',\n  created_at: new Date().toISOString()\n})) }}"
+      },
+      "id": "save-forecasts",
+      "name": "保存预测结果到数据库",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1500, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO inventory_predictions_log (item_id, prediction_type, input_data_summary, output_summary, execution_time_ms, status, triggered_by) VALUES ('{{ $node[\"获取活跃商品列表\"].json.id }}', 'sales_forecast', '{\"days\": 90}', '{\"forecasts\": {{ $json.predictions.length }}}', {{ $json.execution_time_ms || 0 }}, 'success', 'scheduled')",
+        "options": {}
+      },
+      "id": "log-prediction",
+      "name": "记录预测日志",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1750, 300],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "merge-results",
+      "name": "合并结果",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [1625, 450]
+    },
+    {
+      "parameters": {
+        "subject": "每日销量预测执行报告",
+        "html": "=<h2>预测执行摘要</h2><p>执行时间: {{ $now.format('yyyy-MM-dd HH:mm:ss') }}</p><p>处理商品数: {{ $node[\"获取活跃商品列表\"].json.length }}</p><p>成功预测: {{ $node[\"保存预测结果到数据库\"].json.success_count || 0 }}</p><p>失败数量: {{ $node[\"保存预测结果到数据库\"].json.failed_count || 0 }}</p>",
+        "to": "admin@yourcompany.com",
+        "options": {}
+      },
+      "id": "send-email-notification",
+      "name": "发送执行结果邮件",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [2000, 300],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-credentials",
+          "name": "SMTP Email"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "error-check",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "error-handler",
+      "name": "错误检查",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1375, 450]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO inventory_predictions_log (item_id, prediction_type, status, error_message, triggered_by) VALUES ('{{ $node[\"获取活跃商品列表\"].json.id }}', 'sales_forecast', 'failed', '{{ $json.error.message }}', 'scheduled')",
+        "options": {}
+      },
+      "id": "log-error",
+      "name": "记录错误日志",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [1500, 550],
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase PostgreSQL"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "定时触发(每天凌晨2点)": {
+      "main": [
+        [
+          {
+            "node": "获取活跃商品列表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取活跃商品列表": {
+      "main": [
+        [
+          {
+            "node": "拆分商品列表",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "拆分商品列表": {
+      "main": [
+        [
+          {
+            "node": "获取90天销售历史",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取90天销售历史": {
+      "main": [
+        [
+          {
+            "node": "调用预测API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "调用预测API": {
+      "main": [
+        [
+          {
+            "node": "错误检查",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "错误检查": {
+      "main": [
+        [
+          {
+            "node": "记录错误日志",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "保存预测结果到数据库",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "保存预测结果到数据库": {
+      "main": [
+        [
+          {
+            "node": "记录预测日志",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "记录预测日志": {
+      "main": [
+        [
+          {
+            "node": "合并结果",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "合并结果": {
+      "main": [
+        [
+          {
+            "node": "发送执行结果邮件",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2026-04-08T00:00:00.000Z",
+      "updatedAt": "2026-04-08T00:00:00.000Z",
+      "id": "1",
+      "name": "inventory-ai"
+    },
+    {
+      "createdAt": "2026-04-08T00:00:00.000Z",
+      "updatedAt": "2026-04-08T00:00:00.000Z",
+      "id": "2",
+      "name": "scheduled"
+    }
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-08T00:00:00.000Z",
+  "versionId": "1.0"
+}
