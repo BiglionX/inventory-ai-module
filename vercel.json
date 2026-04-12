@@ -15,7 +15,7 @@
       "dest": "/docs/inventory-ai-module.html"
     },
     {
-      "src": "/(.*)",
+      "src": "/(.+)",
       "dest": "/docs/"
     }
   ]
