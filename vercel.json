@@ -1,4 +1,4 @@
-﻿{
+{
   "builds": [
     {
       "src": "docs/*.html",
@@ -16,7 +16,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/docs/$1"
+      "dest": "/docs/"
     }
   ]
 }
