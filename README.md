@@ -1,4 +1,4 @@
-﻿# 馃幆 鏅鸿兘杩涢攢瀛楢I妯″潡
+﻿# 🎯 智能进销存AI模块
 
 ![Version](https://img.shields.io/badge/version-2.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -7,43 +7,49 @@
 
 > AI-Powered Inventory Management System with Domain-Driven Design, Prophet Forecasting, and n8n Automation
 
-## 鉁?鏍稿績鐗规€?
-- 馃 **AI 閿€閲忛娴?* - 鍩轰簬 Facebook Prophet锛屽噯纭巼 > 85%
-- 馃攧 **鑷姩琛ヨ揣** - n8n 宸ヤ綔娴侀┍鍔ㄧ殑鏅鸿兘琛ヨ揣寤鸿
-- 馃挰 **AI 闂瓟鍔╂墜** - Dify 闆嗘垚鐨勮嚜鐒惰瑷€搴撳瓨鏌ヨ
-- 馃搳 **鏁版嵁鍙鍖?* - Recharts 椹卞姩鐨勪赴瀵屽浘琛?- 馃彈锔?**DDD 鏋舵瀯** - 娓呮櫚鐨勯鍩熼┍鍔ㄨ璁?- 鈿?**楂樻€ц兘** - P95 < 250ms 鍝嶅簲鏃堕棿
+## ✨ 核心特性
 
-## 馃殌 蹇€熷紑濮?
+- 🤖 **AI 销量预测** - 基于 Facebook Prophet，准确率 > 85%
+- 🔄 **自动补货** - n8n 工作流驱动的智能补货建议
+- 💬 **AI 问答助手** - Dify 集成的自然语言库存查询
+- 📊 **数据可视化** - Recharts 驱动的丰富图表
+- 🏗️ **DDD 架构** - 清晰的领域驱动设计
+- ⚡ **高性能** - P95 < 250ms 响应时间
+
+## 🚀 快速开始
+
 ```bash
 npm install
 npm run dev
 ```
 
-## 馃摎 鏂囨。
+## 📚 文档
 
-- [妯″潡璇存槑](src/modules/inventory-management/README.md)
-- [API 濂戠害](src/modules/inventory-management/API_CONTRACT.md)
-- [缁勪欢鎸囧崡](src/modules/inventory-management/interface-adapters/components/README.md)
-- [瀹炴柦鎶ュ憡](IMPLEMENTATION_REPORT.md)
-- [閮ㄧ讲鎸囧崡](src/modules/inventory-management/DEPLOYMENT_GUIDE.md)
+- [模块说明](src/modules/inventory-management/README.md)
+- [API 契约](src/modules/inventory-management/API_CONTRACT.md)
+- [组件指南](src/modules/inventory-management/interface-adapters/components/README.md)
+- [实施报告](IMPLEMENTATION_REPORT.md)
+- [部署指南](src/modules/inventory-management/DEPLOYMENT_GUIDE.md)
 
-## 馃洜锔?鎶€鏈爤
+## 🛠️ 技术栈
 
-- **鍓嶇**: Next.js 14, React 18, TypeScript, Tailwind CSS, Recharts
-- **鍚庣**: FastAPI, Python, Prophet
-- **鏁版嵁搴?*: PostgreSQL (Supabase), Redis
+- **前端**: Next.js 14, React 18, TypeScript, Tailwind CSS, Recharts
+- **后端**: FastAPI, Python, Prophet
+- **数据库**: PostgreSQL (Supabase), Redis
 - **AI**: Dify, Pinecone Vector DB
-- **鑷姩鍖?*: n8n
+- **自动化**: n8n
 
-## 馃搳 椤圭洰缁熻
+## 📊 项目统计
 
-- **3,400+** 琛?TypeScript 浠ｇ爜
-- **15+** 鏍稿績缁勪欢
-- **100%** TypeScript 绫诲瀷瑕嗙洊
-- **92%** 鍔熻兘瀹屾垚搴?
-## 馃 璐＄尞
+- **3,400+** 行 TypeScript 代码
+- **15+** 核心组件
+- **100%** TypeScript 类型覆盖
+- **92%** 功能完成度
 
-娆㈣繋鎻愪氦 Issue 鍜?Pull Request锛佽瑙?[CONTRIBUTING.md](src/modules/inventory-management/CONTRIBUTING.md)
+## 🤝 贡献
 
-## 馃搫 璁稿彲璇?
-MIT License - 璇﹁ [LICENSE](src/modules/inventory-management/LICENSE)
+欢迎提交 Issue 和 Pull Request！详见 [CONTRIBUTING.md](src/modules/inventory-management/CONTRIBUTING.md)
+
+## 📄 许可证
+
+MIT License - 详见 [LICENSE](src/modules/inventory-management/LICENSE)
