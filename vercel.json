@@ -1,18 +1,18 @@
 {
   "builds": [
     {
-      "src": "docs/**/*.html",
+      "src": "**/*.html",
       "use": "@vercel/static"
     },
     {
-      "src": "docs/**/*",
+      "src": "**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/docs/$1"
+      "dest": "/$1"
     }
   ]
 }
