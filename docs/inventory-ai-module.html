@@ -289,37 +289,137 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
       }
+
+      /* Hero Section */
+      .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 80px 40px;
+        border-radius: 20px;
+        margin: 30px 0;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: moveBackground 20s linear infinite;
+      }
+
+      @keyframes moveBackground {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-title {
+        font-size: 3em;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        animation: fadeInDown 0.8s ease-out;
+      }
+
+      .hero-subtitle {
+        font-size: 1.5em;
+        margin-bottom: 30px;
+        opacity: 0.95;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+      }
+
+      .hero-badges {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin: 30px 0;
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+      }
+
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 35px;
+        background: white;
+        color: #667eea;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.2em;
+        margin-top: 20px;
+        transition: all 0.3s;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+      }
+
+      .hero-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Download Button */
+      .download-btn {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        padding: 12px 25px;
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 700;
+        box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+      }
     </style>
   </head>
   <body>
-    <header>
-      <h1
-        style="
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 15px;
-        "
-      >
-        <img
-          src="./proclaw-logo.png"
-          alt="ProClaw Logo"
-          style="
-            width: 60px;
-            height: auto;
-            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
-          "
-        />
-        <span>进销存AI集成模块</span>
-      </h1>
-      <p>Inventory AI Integration Module</p>
-      <div>
-        <span class="badge">✨ 智能预测</span>
-        <span class="badge">🤖 AI驱动</span>
-        <span class="badge">⚡ 高性能</span>
-        <span class="badge">🔧 模块化</span>
+    <!-- Download Button -->
+    <a href="https://github.com/BiglionX/inventory-ai-module" target="_blank" class="download-btn">
+      <span>⬇️</span>
+      <span>GitHub 下载</span>
+    </a>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">🎯 智能进销存AI模块</h1>
+        <p class="hero-subtitle">AI-Powered Inventory Management with DDD Architecture</p>
+        <div class="hero-badges">
+          <span class="badge">✨ 智能预测</span>
+          <span class="badge">🤖 AI驱动</span>
+          <span class="badge">⚡ 高性能</span>
+          <span class="badge">🔧 模块化</span>
+          <span class="badge">📊 可视化</span>
+        </div>
+        <a href="#features" class="hero-cta">
+          <span>🚀</span>
+          <span>立即开始</span>
+        </a>
       </div>
-    </header>
+    </div>
 
     <div class="container">
       <nav class="nav-menu">
@@ -329,7 +429,7 @@
         <a href="./faq.html">❓ 常见问题</a>
       </nav>
 
-      <div class="content">
+      <div class="content" id="features">
         <section>
           <h2>📋 模块简介</h2>
           <p style="font-size: 1.1em; line-height: 1.8">
