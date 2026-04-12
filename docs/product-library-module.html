@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>产品库模块 - Product Library Module</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        text-align: center;
+        color: white;
+        padding: 60px 20px;
+        animation: fadeInDown 0.8s ease-out;
+      }
+
+      header h1 {
+        font-size: 3em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      header p {
+        font-size: 1.3em;
+        opacity: 0.95;
+      }
+
+      .badge {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        margin: 10px 5px;
+        font-size: 0.9em;
+        backdrop-filter: blur(10px);
+      }
+
+      .content {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        margin: 20px 0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: fadeInUp 0.8s ease-out;
+      }
+
+      section {
+        margin-bottom: 40px;
+      }
+
+      h2 {
+        color: #667eea;
+        font-size: 2em;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #667eea;
+      }
+
+      h3 {
+        color: #764ba2;
+        font-size: 1.5em;
+        margin: 25px 0 15px 0;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+
+      .feature-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 25px;
+        border-radius: 15px;
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .feature-card h4 {
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+      }
+
+      .feature-card p {
+        color: #555;
+        font-size: 0.95em;
+      }
+
+      .tech-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 15px 0;
+      }
+
+      .tech-badge {
+        background: #667eea;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: 500;
+      }
+
+      code {
+        background: #f4f4f4;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        color: #e83e8c;
+      }
+
+      pre {
+        background: #2d2d2d;
+        color: #f8f8f2;
+        padding: 20px;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin: 15px 0;
+        line-height: 1.5;
+      }
+
+      pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 30px 0;
+      }
+
+      .stat-card {
+        text-align: center;
+        padding: 25px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .stat-number {
+        font-size: 2.5em;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 0.95em;
+        opacity: 0.9;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+        margin: 10px 5px;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 2px solid #667eea;
+        color: #667eea;
+      }
+
+      .btn-outline:hover {
+        background: #667eea;
+        color: white;
+      }
+
+      ul {
+        margin-left: 25px;
+        margin-top: 10px;
+      }
+
+      li {
+        margin: 8px 0;
+      }
+
+      footer {
+        text-align: center;
+        color: white;
+        padding: 40px 20px;
+        opacity: 0.9;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        header h1 {
+          font-size: 2em;
+        }
+
+        .content {
+          padding: 25px;
+        }
+
+        h2 {
+          font-size: 1.6em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>📦 产品库模块</h1>
+      <p>Product Library Module</p>
+      <div>
+        <span class="badge">🌐 行业标准</span>
+        <span class="badge">📊 五库设计</span>
+        <span class="badge">🔗 BOM管理</span>
+        <span class="badge">📱 溯源追踪</span>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="content">
+        <section>
+          <h2>📋 模块简介</h2>
+          <p style="font-size: 1.1em; line-height: 1.8">
+            产品库是<strong>行业标准产品主数据中心</strong>，作为公开标准数据源（行业统一），为整个系统提供标准化的产品基础数据支持。采用五库设计（品牌库、整机库、配件库、部件库、零件库），支持BOM管理和全生命周期溯源追踪。
+          </p>
+
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-number">5</div>
+              <div class="stat-label">核心子库</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">10+</div>
+              <div class="stat-label">数据表</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">100%</div>
+              <div class="stat-label">TypeScript</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">全局</div>
+              <div class="stat-label">共享数据</div>
+            </div>
+          </div>
+        </section>
+
+        <section
+          style="
+            background: #fff3e0;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #ff9800;
+          "
+        >
+          <h2 style="color: #e65100; border-bottom-color: #ff9800">
+            📢 模块定位声明
+          </h2>
+          <p style="font-size: 1.1em; line-height: 1.8">
+            <strong>核心理念：</strong
+            >产品库是<strong>"行业标准产品主数据中心"</strong>，作为<strong>公开标准数据源（行业统一）</strong>，为整个系统提供标准化的产品基础数据支持。
+          </p>
+          <p style="font-size: 1.05em; line-height: 1.8; margin-top: 15px">
+            <strong>简单来说：</strong
+            >产品库就像是一个<strong>"产品字典"</strong>，里面记录了所有产品的标准信息。
+          </p>
+          <div
+            style="
+              background: white;
+              padding: 20px;
+              border-radius: 10px;
+              margin-top: 20px;
+            "
+          >
+            <p style="line-height: 1.8">
+              💡
+              <strong>打个比方：</strong
+              >就像手机通讯录，产品库存储的是"联系人基本信息"（姓名、电话），而进销存系统记录的是"你和这个联系人的交易记录"（买了什么、什么时候买的）。
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h2>✨ 核心功能</h2>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h4>🏪 品牌管理</h4>
+              <p>
+                管理产品品牌信息，包括Logo、描述、网站、联系方式等，支持API密钥配置
+              </p>
+            </div>
+            <div class="feature-card">
+              <h4>💻 整机产品</h4>
+              <p>
+                管理完整的成品产品信息和规格参数，支持SKU编码、状态管理、版本控制
+              </p>
+            </div>
+            <div class="feature-card">
+              <h4>🔧 配件管理</h4>
+              <p>管理产品配件信息和兼容性，支持兼容产品列表、规格参数</p>
+            </div>
+            <div class="feature-card">
+              <h4>⚙️ 部件管理</h4>
+              <p>
+                管理产品组成部件（如CPU、内存、硬盘），支持类型分类、技术规格
+              </p>
+            </div>
+            <div class="feature-card">
+              <h4>🔩 零件管理</h4>
+              <p>
+                管理最小物理单元的零件（如螺丝、电阻、电容），支持材质、尺寸信息
+              </p>
+            </div>
+            <div class="feature-card">
+              <h4>📱 溯源码</h4>
+              <p>生成和管理产品溯源码，追踪产品从生产到售后的全生命周期</p>
+            </div>
+            <div class="feature-card">
+              <h4>🔗 BOM管理</h4>
+              <p>物料清单管理，定义产品之间的关联关系（包含、兼容、组成等）</p>
+            </div>
+            <div class="feature-card">
+              <h4>📥 数据导入</h4>
+              <p>从CSV、Excel或API批量导入产品数据，支持任务记录和错误日志</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>🏗️ 架构设计</h2>
+          <p style="font-size: 1.05em; line-height: 1.8; margin-bottom: 20px">
+            产品库采用清晰的三层架构设计：
+          </p>
+
+          <div class="feature-grid">
+            <div
+              class="feature-card"
+              style="
+                background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+              "
+            >
+              <h4 style="color: #1565c0">1️⃣ 产品库</h4>
+              <p><strong>作用：</strong>存储产品的标准信息</p>
+              <p><strong>特点：</strong>全局共享，所有人用同一份数据</p>
+              <p><strong>例子：</strong>iPhone 15的规格、参数、图片</p>
+            </div>
+
+            <div
+              class="feature-card"
+              style="
+                background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+              "
+            >
+              <h4 style="color: #7b1fa2">2️⃣ 进销存系统</h4>
+              <p><strong>作用：</strong>管理你的库存和交易</p>
+              <p><strong>特点：</strong>每个用户有自己的独立数据</p>
+              <p><strong>例子：</strong>你仓库里有10台iPhone 15</p>
+            </div>
+
+            <div
+              class="feature-card"
+              style="
+                background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+              "
+            >
+              <h4 style="color: #2e7d32">3️⃣ 溯源码插件</h4>
+              <p><strong>作用：</strong>追踪每个产品的生命周期</p>
+              <p><strong>特点：</strong>给每个产品一个唯一身份证</p>
+              <p><strong>例子：</strong>这台iPhone 15的生产、销售、维修记录</p>
+            </div>
+          </div>
+
+          <div
+            style="
+              background: #fff9c4;
+              padding: 20px;
+              border-radius: 10px;
+              margin-top: 20px;
+            "
+          >
+            <p style="line-height: 1.8">
+              ⚠️
+              <strong>重要提示：</strong
+              >产品库采用<strong>单一全局实例</strong>设计，通过品牌、类目等维度组织数据，<strong>不需要</strong>也不支持创建多个数据库实例。这样设计的好处是保证数据的一致性和标准化。
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h2>🛠️ 技术栈</h2>
+          <div class="tech-stack">
+            <span class="tech-badge">Next.js 14</span>
+            <span class="tech-badge">React 18</span>
+            <span class="tech-badge">TypeScript</span>
+            <span class="tech-badge">PostgreSQL</span>
+            <span class="tech-badge">Supabase</span>
+            <span class="tech-badge">Prisma ORM</span>
+            <span class="tech-badge">Material-UI</span>
+            <span class="tech-badge">DDD架构</span>
+          </div>
+        </section>
+
+        <section
+          style="
+            background: #e8f5e9;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #4caf50;
+          "
+        >
+          <h2 style="color: #2e7d32; border-bottom-color: #4caf50">
+            💼 典型使用场景
+          </h2>
+
+          <h3 style="color: #1976d2">场景1：电子产品零售商</h3>
+          <ul style="font-size: 1em; line-height: 1.8; margin-left: 25px">
+            <li>在产品库中查找"Apple"品牌的所有iPhone型号</li>
+            <li>查看iPhone 15的详细规格和配件清单</li>
+            <li>将产品信息导入到你的进销存系统</li>
+            <li>为你的每台iPhone生成溯源码，方便售后追踪</li>
+          </ul>
+
+          <h3 style="color: #2e7d32; margin-top: 25px">场景2：电脑组装商</h3>
+          <ul style="font-size: 1em; line-height: 1.8; margin-left: 25px">
+            <li>在部件库中查找各种CPU、内存、硬盘</li>
+            <li>查看哪些配件兼容特定的主板</li>
+            <li>使用BOM功能管理整机的组成部件</li>
+            <li>为组装好的电脑生成完整的产品档案</li>
+          </ul>
+
+          <h3 style="color: #ed6c02; margin-top: 25px">场景3：维修服务商</h3>
+          <ul style="font-size: 1em; line-height: 1.8; margin-left: 25px">
+            <li>扫描产品溯源码，快速查看产品信息</li>
+            <li>查询零件库，找到替换零件的详细信息</li>
+            <li>记录维修历史，完善产品生命周期档案</li>
+            <li>为客户提供透明的维修记录和零件来源</li>
+          </ul>
+        </section>
+
+        <section
+          style="
+            background: #fce4ec;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 5px solid #c2185b;
+          "
+        >
+          <h2 style="color: #c2185b; border-bottom-color: #c2185b">
+            ❓ 常见问题（FAQ）
+          </h2>
+
+          <h3 style="color: #c2185b">Q1: 为什么不能创建多个产品库？</h3>
+          <p style="line-height: 1.8; margin-left: 20px">
+            A:
+            产品库的定位是"行业标准数据"，就像字典一样，大家都应该使用同一本标准字典。如果你需要隔离数据，应该在进销存系统中实现，那里支持多租户隔离。
+          </p>
+
+          <h3 style="color: #c2185b; margin-top: 20px">
+            Q2: 产品库和进销存有什么区别？
+          </h3>
+          <p style="line-height: 1.8; margin-left: 20px">
+            A:
+            产品库存储的是"产品是什么"（名称、规格、图片等标准信息），进销存记录的是"我有多少"（库存数量、采购价格、销售记录等业务数据）。
+          </p>
+
+          <h3 style="color: #c2185b; margin-top: 20px">
+            Q3: 我需要自己录入所有产品信息吗？
+          </h3>
+          <p style="line-height: 1.8; margin-left: 20px">A: 不一定！你可以：</p>
+          <ul style="line-height: 1.8; margin-left: 45px">
+            <li>使用数据导入功能批量导入CSV/Excel文件</li>
+            <li>通过API从品牌方官方数据源同步</li>
+            <li>手动添加少量特殊产品</li>
+          </ul>
+
+          <h3 style="color: #c2185b; margin-top: 20px">
+            Q4: 什么是BOM？有什么用？
+          </h3>
+          <p style="line-height: 1.8; margin-left: 20px">
+            A: BOM（Bill of
+            Materials）是物料清单，用来描述一个产品由哪些部件组成。比如一台电脑包含：1个CPU、2根内存条、1个硬盘等。BOM可以帮助你了解产品的完整组成结构、计算生产成本、管理配件兼容性。
+          </p>
+
+          <h3 style="color: #c2185b; margin-top: 20px">Q5: 溯源码怎么使用？</h3>
+          <p style="line-height: 1.8; margin-left: 20px">
+            A: 溯源码就像是产品的"身份证"，每个产品都有唯一的二维码。使用时：
+          </p>
+          <ol style="line-height: 1.8; margin-left: 45px">
+            <li>在产品库中选择要追踪的产品</li>
+            <li>生成溯源码（可以批量生成）</li>
+            <li>打印二维码贴到产品上</li>
+            <li>客户扫码即可查看产品完整信息和使用历史</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>📦 快速开始</h2>
+
+          <div
+            style="
+              background: #e3f2fd;
+              padding: 25px;
+              border-radius: 10px;
+              margin-bottom: 25px;
+            "
+          >
+            <h3 style="color: #1565c0; margin-top: 0">⚙️ 环境要求</h3>
+            <ul style="line-height: 1.8">
+              <li><strong>Node.js 18+</strong> - JavaScript运行时</li>
+              <li><strong>PostgreSQL 12+</strong> - 或使用Supabase云数据库</li>
+              <li><strong>Supabase CLI</strong> - 数据库迁移工具</li>
+            </ul>
+          </div>
+
+          <h3>1. 执行数据库迁移</h3>
+          <pre><code># 创建产品库Schema
+supabase db push --file supabase/migrations/020_create_product_library_schema.sql
+
+# 配置访问权限
+supabase db push --file supabase/migrations/027_grant_product_library_permissions.sql</code></pre>
+
+          <h3>2. 配置环境变量</h3>
+          <p style="margin: 10px 0">确保 <code>.env.local</code> 中包含：</p>
+          <pre><code>NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key</code></pre>
+
+          <h3>3. 启动开发服务器</h3>
+          <pre><code>npm run dev
+# 访问 http://localhost:3001/product-library</code></pre>
+
+          <h3>4. 开始使用</h3>
+          <ul style="line-height: 1.8">
+            <li>首先创建品牌信息</li>
+            <li>然后添加整机产品和配件/部件/零件</li>
+            <li>配置BOM关系（可选）</li>
+            <li>发布产品到产品库</li>
+            <li>生成溯源码并追踪产品生命周期</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📁 项目结构</h2>
+          <pre><code>product-library/
+├── domain/                    # 领域层
+│   ├── entities/             # 实体定义
+│   └── repositories/         # Repository接口
+│
+├── application/              # 应用层
+│   └── services/            # 应用服务
+│
+├── infrastructure/          # 基础设施层
+│   ├── repositories/        # Supabase实现
+│   └── database/           # 数据库迁移脚本
+│
+└── interface-adapters/     # 接口适配层
+    ├── controllers/        # API控制器
+    ├── components/         # React组件
+    └── api/               # Next.js API Routes</code></pre>
+        </section>
+
+        <section>
+          <h2>📝 文档</h2>
+          <div class="feature-grid">
+            <div class="feature-card">
+              <h4>📖 开发计划</h4>
+              <p>
+                <a
+                  href="../PRODUCT_LIBRARY_DEVELOPMENT_PLAN.md"
+                  target="_blank"
+                  style="color: #667eea; font-weight: 600"
+                  >PRODUCT_LIBRARY_DEVELOPMENT_PLAN.md</a
+                >
+              </p>
+              <p style="font-size: 0.9em; margin-top: 8px">
+                完整的产品库开发计划和架构设计
+              </p>
+            </div>
+            <div class="feature-card">
+              <h4>📖 API文档</h4>
+              <p>
+                <a
+                  href="../src/lib/api/product-library.ts"
+                  target="_blank"
+                  style="color: #667eea; font-weight: 600"
+                  >product-library.ts</a
+                >
+              </p>
+              <p style="font-size: 0.9em; margin-top: 8px">
+                TypeScript API客户端封装
+              </p>
+            </div>
+            <div class="feature-card">
+              <h4>📖 数据库Schema</h4>
+              <p>
+                <a
+                  href="../supabase/migrations/020_create_product_library_schema.sql"
+                  target="_blank"
+                  style="color: #667eea; font-weight: 600"
+                  >020_create_product_library_schema.sql</a
+                >
+              </p>
+              <p style="font-size: 0.9em; margin-top: 8px">
+                完整的数据库表结构定义
+              </p>
+            </div>
+            <div class="feature-card">
+              <h4>📖 前端快速开始</h4>
+              <p>
+                <a
+                  href="../src/modules/product-library/FRONTEND_QUICK_START.md"
+                  target="_blank"
+                  style="color: #667eea; font-weight: 600"
+                  >FRONTEND_QUICK_START.md</a
+                >
+              </p>
+              <p style="font-size: 0.9em; margin-top: 8px">前端模块使用指南</p>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>🚀 开始使用</h2>
+          <div style="text-align: center; margin: 30px 0">
+            <a
+              href="http://localhost:3001/product-library"
+              class="btn"
+              target="_blank"
+              >访问产品库</a
+            >
+            <a
+              href="../PRODUCT_LIBRARY_DEVELOPMENT_PLAN.md"
+              class="btn btn-outline"
+              target="_blank"
+              >阅读文档</a
+            >
+            <a
+              href="../src/app/(dashboard)/product-library"
+              class="btn btn-outline"
+              target="_blank"
+              >浏览源码</a
+            >
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer>
+      <p style="font-size: 1.1em; margin-bottom: 10px">
+        Made with ❤️ by ProdCycleAI Team
+      </p>
+      <p style="opacity: 0.8">© 2026 Product Library Module. MIT License.</p>
+      <p style="margin-top: 15px; font-size: 0.9em">
+        Version 1.0 | Last Updated: 2026-04-09
+      </p>
+    </footer>
+  </body>
+</html>
