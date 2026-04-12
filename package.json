@@ -1,0 +1,29 @@
+﻿{
+    "version":  "2.0.0",
+    "name":  "inventory-ai-module",
+    "description":  "AI-Powered Inventory Management System with DDD Architecture",
+    "scripts":  {
+                    "test:e2e":  "playwright test",
+                    "build":  "next build",
+                    "benchmark":  "node scripts/performance/inventory-benchmark.js",
+                    "lint":  "next lint",
+                    "start":  "next start",
+                    "dev":  "next dev",
+                    "test":  "vitest"
+                },
+    "dependencies":  {
+                         "react":  "^18.x",
+                         "recharts":  "^2.x",
+                         "react-dom":  "^18.x",
+                         "next":  "14.x"
+                     },
+    "devDependencies":  {
+                            "vitest":  "^1.x",
+                            "@playwright/test":  "^1.x",
+                            "typescript":  "^5.x",
+                            "@types/react-dom":  "^18.x",
+                            "@types/react":  "^18.x",
+                            "@types/node":  "^20.x"
+                        },
+    "private":  true
+}

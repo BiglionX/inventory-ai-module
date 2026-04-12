@@ -1,0 +1,70 @@
+{
+  "name": "@prodcycleai/inventory-ai-module",
+  "version": "2.0.0",
+  "description": "进销存AI集成模块 - 基于DDD架构的智能库存管理系统，集成Prophet预测、n8n工作流和Dify AI问答",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "API_CONTRACT.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:e2e": "playwright test",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "benchmark": "node scripts/performance/inventory-benchmark.js"
+  },
+  "keywords": [
+    "inventory",
+    "ai",
+    "forecasting",
+    "prophet",
+    "ddd",
+    "nextjs",
+    "react",
+    "typescript",
+    "supply-chain",
+    "replenishment",
+    "n8n",
+    "dify"
+  ],
+  "author": "ProdCycleAI Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ProdCycleAI/inventory-ai-module.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ProdCycleAI/inventory-ai-module/issues"
+  },
+  "homepage": "https://github.com/ProdCycleAI/inventory-ai-module#readme",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "recharts": "^2.10.0",
+    "lucide-react": "^0.300.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.0.0",
+    "@playwright/test": "^1.40.0",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0"
+  },
+  "peerDependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
