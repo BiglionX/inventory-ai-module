@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>快速开始 - 进销存AI集成模块</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        text-align: center;
+        color: white;
+        padding: 40px 20px;
+      }
+
+      header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      header p {
+        font-size: 1.2em;
+        opacity: 0.95;
+      }
+
+      .nav-menu {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 15px;
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-menu a {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .nav-menu a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      }
+
+      .nav-menu a.active {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      }
+
+      .content {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        margin: 20px 0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      section {
+        margin-bottom: 40px;
+      }
+
+      h2 {
+        color: #667eea;
+        font-size: 2em;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #667eea;
+      }
+
+      h3 {
+        color: #764ba2;
+        font-size: 1.5em;
+        margin: 25px 0 15px 0;
+      }
+
+      code {
+        background: #f4f4f4;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        color: #e83e8c;
+      }
+
+      pre {
+        background: #2d2d2d;
+        color: #f8f8f2;
+        padding: 20px;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin: 15px 0;
+        line-height: 1.5;
+      }
+
+      pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 12px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: all 0.3s;
+        margin: 10px 5px;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+      }
+
+      ul {
+        margin-left: 25px;
+        margin-top: 10px;
+      }
+
+      li {
+        margin: 8px 0;
+      }
+
+      footer {
+        text-align: center;
+        color: white;
+        padding: 40px 20px;
+        opacity: 0.9;
+      }
+
+      @media (max-width: 768px) {
+        header h1 {
+          font-size: 1.8em;
+        }
+
+        .content {
+          padding: 25px;
+        }
+
+        h2 {
+          font-size: 1.6em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>
+        <img
+          src="./proclaw-logo.png"
+          alt="ProClaw Logo"
+          style="
+            width: 60px;
+            height: auto;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+          "
+        />
+        <span>进销存AI集成模块</span>
+      </h1>
+      <p>Inventory AI Integration Module - 快速开始指南</p>
+    </header>
+
+    <div class="container">
+      <nav class="nav-menu">
+        <a href="./inventory-ai-module.html">🏠 首页</a>
+        <a href="./quick-start.html" class="active">🚀 快速开始</a>
+        <a href="./use-cases.html">💼 应用场景</a>
+        <a href="./faq.html">❓ 常见问题</a>
+      </nav>
+
+      <div class="content">
+        <section>
+          <h2>📦 快速开始</h2>
+
+          <div
+            style="
+              background: #e3f2fd;
+              padding: 25px;
+              border-radius: 10px;
+              margin-bottom: 25px;
+            "
+          >
+            <h3 style="color: #1565c0; margin-top: 0">⚙️ 环境要求</h3>
+            <ul style="line-height: 1.8">
+              <li><strong>Node.js 18+</strong> - JavaScript运行时</li>
+              <li><strong>Python 3.9+</strong> - 用于Prophet预测模型</li>
+              <li><strong>PostgreSQL 14+</strong> - 或使用Supabase云数据库</li>
+              <li><strong>Redis</strong> - 缓存（可选但推荐）</li>
+            </ul>
+          </div>
+
+          <h3>1. 安装依赖</h3>
+          <pre><code># 安装Node.js依赖
+npm install
+
+# 安装Recharts（可视化库）
+npm install recharts --legacy-peer-deps
+
+# 安装Python依赖（用于预测服务）
+pip install prophet pandas numpy</code></pre>
+
+          <h3>2. 配置环境变量</h3>
+          <p style="margin: 10px 0">创建 <code>.env.local</code> 文件：</p>
+          <pre><code># Supabase 配置
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# Dify AI 配置
+DIFY_API_KEY=app-xxxxxxxxxxxxxxxxxxxx
+DIFY_BASE_URL=https://api.dify.ai/v1
+
+# Pinecone 配置
+PINECONE_API_KEY=pcsk_xxxxxxxxxxxxxxxxxxxx
+PINECONE_INDEX_NAME=inventory-knowledge
+
+# 预测服务配置
+PREDICTION_API_URL=http://localhost:8000
+
+# Redis 配置（可选）
+REDIS_URL=redis://localhost:6379
+
+# n8n 配置（可选）
+N8N_WEBHOOK_URL=http://localhost:5678/webhook</code></pre>
+
+          <div
+            style="
+              background: #fff9c4;
+              padding: 15px;
+              border-radius: 8px;
+              margin: 15px 0;
+            "
+          >
+            <p style="margin: 0">
+              ⚠️ <strong>注意：</strong>将所有
+              <code>your-xxx</code> 替换为实际的密钥，不要将
+              <code>.env.local</code> 提交到Git。
+            </p>
+          </div>
+
+          <h3>3. 启动服务</h3>
+          <p style="margin: 10px 0">
+            需要启动3个服务（每个服务一个终端窗口）：
+          </p>
+
+          <div
+            style="
+              background: #f5f5f5;
+              padding: 15px;
+              border-radius: 8px;
+              margin: 10px 0;
+            "
+          >
+            <p style="margin: 0 0 10px 0">
+              <strong>终端1：Next.js主应用</strong>
+            </p>
+            <pre style="margin: 0"><code>npm run dev
+# 访问 http://localhost:3001</code></pre>
+          </div>
+
+          <div
+            style="
+              background: #f5f5f5;
+              padding: 15px;
+              border-radius: 8px;
+              margin: 10px 0;
+            "
+          >
+            <p style="margin: 0 0 10px 0">
+              <strong>终端2：预测API服务</strong>
+            </p>
+            <pre style="margin: 0"><code>cd services/prediction-api
+uvicorn main:app --reload --port 8000
+# 访问 http://localhost:8000/docs</code></pre>
+          </div>
+
+          <div
+            style="
+              background: #f5f5f5;
+              padding: 15px;
+              border-radius: 8px;
+              margin: 10px 0;
+            "
+          >
+            <p style="margin: 0 0 10px 0">
+              <strong>终端3：n8n工作流（可选）</strong>
+            </p>
+            <pre style="margin: 0"><code>n8n start
+# 访问 http://localhost:5678</code></pre>
+          </div>
+
+          <h3>4. 使用组件</h3>
+          <pre><code>import {
+  SalesForecastChart,
+  InventoryHealthDashboard,
+  ReplenishmentSuggestionsCard,
+  AIChatAssistant
+} from '@/modules/inventory-management/interface-adapters/components';
+
+// 在页面中使用
+&lt;SalesForecastChart data={forecastData} /&gt;
+&lt;InventoryHealthDashboard
+  statusDistribution={statusDist}
+  lowStockItems={lowStockItems}
+/&gt;
+&lt;AIChatAssistant onSendMessage={handleSendMessage} /&gt;</code></pre>
+
+          <h3>5. 运行性能测试</h3>
+          <pre><code>node scripts/performance/inventory-benchmark.js</code></pre>
+        </section>
+
+        <section style="text-align: center; margin-top: 40px">
+          <a href="./inventory-ai-module.html" class="btn">← 返回首页</a>
+          <a href="./use-cases.html" class="btn">查看应用场景 →</a>
+        </section>
+      </div>
+    </div>
+
+    <footer>
+      <p style="font-size: 1.1em; margin-bottom: 10px">
+        Made with ❤️ by ProdCycleAI Team
+      </p>
+      <p style="opacity: 0.8">
+        © 2026 Inventory AI Integration Module. MIT License.
+      </p>
+    </footer>
+  </body>
+</html>
