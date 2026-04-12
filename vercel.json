@@ -1,15 +1,19 @@
-{
+﻿{
   "builds": [
     {
-      "src": "docs/**/*.html",
+      "src": "docs/*.html",
       "use": "@vercel/static"
     },
     {
-      "src": "docs/**/*",
+      "src": "docs/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "^/$",
+      "dest": "/docs/inventory-ai-module.html"
+    },
     {
       "src": "/(.*)",
       "dest": "/docs/$1"
